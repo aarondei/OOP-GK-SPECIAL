@@ -62,6 +62,13 @@ public class App extends JFrame {
             }
         });
 
+        btnClear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetFields();
+            }
+        });
+
     }
 
     public static void main(String[] args) {
