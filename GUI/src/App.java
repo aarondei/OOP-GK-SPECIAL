@@ -140,7 +140,7 @@ public class App extends JFrame {
                         Double bonus = ((Employee)p).thirteenthMonth();
                         if (bonus < 1) throw new IllegalArgumentException(p.getName() + " has not yet worked");
 
-                        JOptionPane.showMessageDialog(null, "13th Month for " + p.getName() + ": " + String.valueOf(bonus));
+                        JOptionPane.showMessageDialog(null, "13th Month for " + p.getName() + ": " + String.format("%.2f", bonus));
                     }
                     else throw new IllegalArgumentException(p.getName() + " is not an employee");
 
