@@ -28,10 +28,14 @@ public class App extends JFrame {
 
     // customized fields by me
     private JRadioButton[] rbPersons = { rbCustomer, rbClerk, rbManager };
+    ButtonGroup btnGPersons = new ButtonGroup();
 
 
     public App() {
         persons = new ArrayList<>();
+        btnGPersons.add(rbCustomer);
+        btnGPersons.add(rbClerk);
+        btnGPersons.add(rbManager);
 
         // TODO add implementations for all milestones here
 
@@ -66,6 +70,38 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 resetFields();
+                taPersons.setText("");
+            }
+        });
+
+        btnLoad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    int n = Integer.parseInt(tfLoad.getText());
+                    Person p = persons.get(n -1);
+
+                    tfName.setText(p.getName());
+                    tfAge.setText(String.valueOf(p.getAge()));
+                    tfMonths.setText("");
+                    tfSalary.setText("");
+
+                    if (p instanceof Employee) {
+                        tfMonths.setText(String.valueOf(((Employee)p).getMonths_worked()));
+                        tfSalary.setText(String.valueOf(((Employee)p).getSalary()));
+                    }
+
+                    if (p instanceof Customer) rbCustomer.setSelected(true);
+                    else if (p instanceof Clerk) rbClerk.setSelected(true);
+                    else if (p instanceof Manager) rbManager.setSelected(true);
+
+                } catch (IndexOutOfBoundsException | NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid load input");
+                }
+                finally {
+                    tfLoad.setText("");
+                }
             }
         });
 
@@ -75,7 +111,7 @@ public class App extends JFrame {
         // add here how to make GUI visible
         App app = new App();
         app.setContentPane(app.pnlMain);
-        app.setSize(425, 500);
+        app.setSize(500, 500);
         app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         app.setResizable(false);
         app.setLocationRelativeTo(null);
@@ -176,13 +212,12 @@ public class App extends JFrame {
     }
 
     private void resetFields() {
-        rbCustomer.setSelected(false);
-        rbClerk.setSelected(false);
-        rbManager.setSelected(false);
+        btnGPersons.clearSelection();
         tfName.setText("");
         tfAge.setText("");
         tfMonths.setText("");
         tfSalary.setText("");
+        tfLoad.setText("");
     }
 
 }
