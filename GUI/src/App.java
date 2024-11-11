@@ -3,8 +3,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -71,8 +70,7 @@ public class App extends JFrame {
                         persons.add(p);
 
                         // show created person
-                        int n = persons.size();
-                        taPersons.append(n + ". " + persons.get(n-1).getClass().getSimpleName() + " - " + persons.get(n -1).getName() + " (" + persons.get(n -1).getAge() + ")\n");
+                        taPersons.append(persons.size() + ". " + p.getClass().getSimpleName() + " - " + p.getName() + " (" + p.getAge() + ")\n");
 
                         // reset fields
                         resetFields();
@@ -161,12 +159,33 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // sleepy nako but ang algorithm is:
-                // Create file then read into it
-                // for (Person p : persons) {
-                //      read p.getName(), " ", p.getAge(), " ", p.getMonths(), " ", p.getSalary()
+                // CREATE FILE
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter("database.txt", true))) {
 
+                    if (persons.isEmpty()) throw new IOException();
 
+                    // WRITE TO FILE
+                    for (Person p : persons) {
+                        bw.write(p.getClass().getSimpleName());
+                        bw.write(" ");
+                        bw.write(p.getName());
+                        bw.write(" ");
+                        bw.write(String.valueOf(p.getAge()));
+                        bw.write(" ");
+
+                        if (p instanceof Employee) {
+                            bw.write(String.valueOf(((Employee) p).getMonths_worked()));
+                            bw.write(" ");
+                            bw.write(String.valueOf(((Employee) p).getSalary()));
+                        }
+
+                        bw.newLine();
+                    }
+                    JOptionPane.showMessageDialog(null, "List written to file successfully!");
+                }
+                catch (IOException ex) {
+                    System.err.println("Error writing into file");
+                }
             }
         });
 
@@ -174,19 +193,50 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // sleepy nako but ang algorithm is:
-                // Open file then store them into persons sequentially
-                // Use regex pattern
+                try (BufferedReader br = new BufferedReader(new FileReader("database.txt"))) {
+
+                    Person p = null;
+                    String line;
+
+                    while ((line = br.readLine()) != null) {
+                        // check what class
+                        String[] words = line.split(" ");
+
+                        switch (words[0]) {
+                            case "Customer":
+                                p = new Customer(words[1], Integer.parseInt(words[2]));
+                                break;
+                            case "Clerk":
+                                p = new Clerk(words[1], Integer.parseInt(words[2]), Integer.parseInt(words[3]), Double.parseDouble(words[4]));
+                                break;
+                            case "Manager":
+                                p = new Manager(words[1], Integer.parseInt(words[2]), Integer.parseInt(words[3]), Double.parseDouble(words[4]));
+                                break;
+                        }
+
+                        JOptionPane.showMessageDialog(null, "Database imported successfully!");
+                        persons.add(p);
+                    }
+
+                } catch (IOException ex) {
+                    System.err.println("Error reading from file");
+                }
+
+                // show on taPersons
+                int n = 1;
+                for (Person p : persons) {
+                    taPersons.append(n + ". " + p.getClass().getSimpleName() + " - " + p.getName() + " (" + p.getAge() + ")\n");
+                    n++;
+                }
             }
         });
-
     }
 
     public static void main(String[] args) {
         // add here how to make GUI visible
         App app = new App();
         app.setContentPane(app.pnlMain);
-        app.setSize(500, 500);
+        app.setSize(500, 600);
         app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         app.setResizable(false);
         app.setLocationRelativeTo(null);
