@@ -250,7 +250,10 @@
             <children>
               <component id="b6593" class="javax.swing.JTextArea" binding="taPersons">
                 <constraints/>
-                <properties/>
+                <properties>
+                  <editable value="false"/>
+                  <enabled value="true"/>
+                </properties>
               </component>
             </children>
           </scrollpane>

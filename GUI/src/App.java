@@ -1,6 +1,10 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +43,20 @@ public class App extends JFrame {
 
         // TODO add implementations for all milestones here
 
+        rbCustomer.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if (rbCustomer.isSelected()) {
+                    tfMonths.setEditable(false);
+                    tfSalary.setEditable(false);
+                }
+                else {
+                    tfMonths.setEditable(true);
+                    tfSalary.setEditable(true);
+                }
+            }
+        });
+
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,9 +78,6 @@ public class App extends JFrame {
                         resetFields();
                     }
                 }
-
-
-
             }
         });
 
@@ -105,6 +120,66 @@ public class App extends JFrame {
             }
         });
 
+        btnSayHi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                for (Person p : persons) {
+                    System.out.println(p);
+                }
+            }
+        });
+
+        btnReward.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    int n = Integer.parseInt(tfLoad.getText());
+                    Person p = persons.get(n -1);
+
+                    if (p instanceof Employee) {
+                        Double bonus = ((Employee)p).thirteenthMonth();
+                        if (bonus < 1) throw new IllegalArgumentException(p.getName() + " has not yet worked");
+
+                        JOptionPane.showMessageDialog(null, "13th Month for " + p.getName() + ": " + String.valueOf(bonus));
+                    }
+                    else throw new IllegalArgumentException(p.getName() + " is not an employee");
+
+                } catch (IndexOutOfBoundsException | NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid load input");
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
+                finally {
+                    tfLoad.setText("");
+                }
+            }
+        });
+
+        btnSavePerson.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // sleepy nako but ang algorithm is:
+                // Create file then read into it
+                // for (Person p : persons) {
+                //      read p.getName(), " ", p.getAge(), " ", p.getMonths(), " ", p.getSalary()
+
+
+            }
+        });
+
+        btnLoadPerson.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // sleepy nako but ang algorithm is:
+                // Open file then store them into persons sequentially
+                // Use regex pattern
+            }
+        });
+
     }
 
     public static void main(String[] args) {
@@ -116,7 +191,7 @@ public class App extends JFrame {
         app.setResizable(false);
         app.setLocationRelativeTo(null);
         app.setVisible(true);
-        app.setTitle("I love CS <3");
+        app.setTitle("Person Database");
     }
 
     static void giveReward(int n) {
